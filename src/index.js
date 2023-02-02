@@ -1,8 +1,10 @@
+// libraries import
 import './css/styles.css';
 import { fetchCountries } from './js/fetchCountries.js';
 import debounce from 'lodash.debounce';
 import Notiflix from 'notiflix';
 
+// variables
 const DEBOUNCE_DELAY = 300;
 
 const refs = {
@@ -11,6 +13,7 @@ const refs = {
   countryInfoEl: document.querySelector('.country-info'),
 };
 
+// function for rendering markup for one country
 function renderCountryList(countries) {
   const markup = countries
     .map(country => {
@@ -25,6 +28,7 @@ function renderCountryList(countries) {
   refs.countryListEl.innerHTML = markup;
 }
 
+//// function for rendering markup for several countries
 function renderCountry(countries) {
   const markup = countries
     .map(country => {
@@ -44,14 +48,17 @@ function renderCountry(countries) {
   refs.countryListEl.innerHTML = markup;
 }
 
-refs.inputEl.addEventListener('input', debounce(someFunction, DEBOUNCE_DELAY));
+// add event listener to input element
+refs.inputEl.addEventListener('input', debounce(onInputChange, DEBOUNCE_DELAY));
 
-function someFunction(event) {
+// handler for event listener for input element
+function onInputChange(event) {
   const userInputData = event.target.value.trim();
   if (userInputData === '') {
     return;
   }
 
+  // fetch data from public API Rest Countries and render data on the page
   fetchCountries(userInputData).then(data => {
     console.log(data);
     if (data.length > 10) {
@@ -69,18 +76,14 @@ function someFunction(event) {
   });
 }
 
+//handler for click event for choosing one country from the dropdown list
 function chooseOneCountry(event) {
-  console.dir(event);
   const parentElem = event.target.parentNode;
-  console.log(parentElem.childNodes);
-  // console.log(typeof parentElem.childNodes[3]);
   const nodeItem = [...parentElem.childNodes]
     .find(node => {
       return node.tagName === 'P';
     })
     .textContent.replaceAll(' ', '%20');
-
-  console.log(nodeItem);
 
   fetchCountries(nodeItem).then(renderCountry);
 }
